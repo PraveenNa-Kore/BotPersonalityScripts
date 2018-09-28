@@ -1,0 +1,2 @@
+# BotPersonalityScripts
+Kora Personality Scripts
