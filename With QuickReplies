@@ -1,0 +1,29 @@
+var quickRepliesLabels = ["Casual", "Neutral", "Professional"];
+var quickRepliesValues = ["casual", "neutral", "professional"];
+var message = {
+    "type": "template",
+    "payload": {
+        "template_type": "quick_replies",
+        "text": "What personality would you like to switch to?",
+        "quick_replies": []
+    }
+};
+
+for (i = 0; i < quickRepliesLabels.length; i++) {
+    //if only text needs to diplayed
+    var quickReply = {
+        "content_type": "text",
+        "title": quickRepliesLabels[i],
+        "payload":quickRepliesValues[i]
+    };
+    /* Uncomment this if both text and image needs to displayed for the  quick reply button
+     var quickReply = {
+     "content_type":"text",
+     "title":quickReplies[i],
+     "payload":"payload2",
+     "image_url": "url of the image
+     };
+     */
+    message.payload.quick_replies.push(quickReply);
+}
+print(JSON.stringify(message));
