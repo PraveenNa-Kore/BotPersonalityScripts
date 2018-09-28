@@ -1,0 +1,63 @@
+//PERSONALITY based messages are defined here. This includes both text and voice based responses since thoses will need to be different but related.
+var txtResponses  = {
+    "casual" :{
+        "msg1" :"Cool 👍 Who should I invite to your awesome meeting?",
+        "msg2" :"OK! 🤔 Who should attend this meeting?"
+    },
+    "neutral" : {
+        "msg1" :"Who would you like to invite to this meeting?",
+        "msg2" :"Give me the names of the invitees…"
+    },
+    "professional" : {
+        "msg1" :"Please provide the names of the invitees…",
+        "msg2" :"Who would you like to invite?"
+    }
+
+};
+var voiceResponses  = {
+    "casual" :{
+        "msg1" :"Who should I invite?",
+        "msg2" :"Who should attend this meeting?"
+    },
+    "neutral" : {
+        "msg1" :"Who would you like to invite to this meeting?",
+        "msg2" :"Give me the names of the invitees..."
+    },
+    "professional" : {
+        "msg1" :"Please provide the names of the invitees…",
+        "msg2" :"Who would you like to invite?"
+    }
+
+};
+//Randomly Select one of the messages based on the bot's current personality setting.
+var txtmsg ="";
+var voicemsg ="";
+var typeOfPersonality =context.session.BotUserSession.currentPersonality;
+if(typeOfPersonality){
+    //If there is a personality defined randomly choose one from that personality...
+    var max =Object.keys(txtResponses[typeOfPersonality]).length;
+    var min=1;
+    var rndMsgNum = Math.floor(Math.random() * (max - min + 1)) + min;
+} else {
+    //If there is no personality defined force neutral personality and randomly choose one from that personality...
+    typeOfPersonality ="neutral";
+    var max =Object.keys(txtResponses[typeOfPersonality]).length;
+    var min=1;
+    var rndMsgNum = Math.floor(Math.random() * (max - min + 1)) + min;
+}
+    txtmsg = txtResponses[typeOfPersonality][("msg"+rndMsgNum)];
+    voicemsg = voiceResponses[typeOfPersonality][("msg"+rndMsgNum)];
+//Modify the payload and construct the final message JSON to send to the client as the response.
+var message = {
+    "type": "template",
+    "payload": {
+   	        "text": "Cross checking calendars. Please wait...",
+    		"speech_hint": "I am checking your files now. Give me a moment..."
+    }
+};
+message.payload.text=txtmsg;
+message.payload.speech_hint=voicemsg;
+//If SDK, send special JSON
+print(JSON.stringify(message));
+//If other channel, send plain text.
+//print(txtmsg);
