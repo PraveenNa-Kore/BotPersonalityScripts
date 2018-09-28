@@ -1,0 +1,83 @@
+//PERSONALITY based messages are defined here. This includes both text and voice based responses since thoses will need to be different but related.
+var quickReplies = [];
+var isTimerTemplate = true;
+var txtResponses  = {
+    "casual" :{
+        "msg1" :"Give me a sec ☝️, looking up free time slots...",
+        "msg2" :"📅 I'm checking for free calendar slots…BRB"
+    },
+    "neutral" : {
+        "msg1" :"Looking up calendars 📅...",
+        "msg2" :"Looking for mutually available times..."
+    },
+    "professional" : {
+        "msg1" :"One moment please. Looking up calendars...",
+        "msg2" :"Looking for mutually available times. Please wait..."
+    }
+
+};
+var voiceResponses  = {
+    "casual" :{
+        "msg1" :"Give me a second",
+        "msg2" :"Checking for free calendar slots. Be Right Back."
+    },
+    "neutral" : {
+        "msg1" :"Looking up calendars",
+        "msg2" :"Looking for mutually available times"
+    },
+    "professional" : {
+        "msg1" :"One moment please.",
+        "msg2" :"Looking for mutually available times."
+    }
+
+};
+//Randomly Select one of the messages based on the bot's current personality setting.
+var txtmsg ="";
+var voicemsg ="";
+var typeOfPersonality =context.session.BotUserSession.currentPersonality;
+if(typeOfPersonality){
+    //If there is a personality defined randomly choose one from that personality...
+    var max =Object.keys(txtResponses[typeOfPersonality]).length;
+    var min=1;
+    var rndMsgNum = Math.floor(Math.random() * (max - min + 1)) + min;
+} else {
+    //If there is no personality defined force neutral personality and randomly choose one from that personality...
+    typeOfPersonality ="neutral";
+    var max =Object.keys(txtResponses[typeOfPersonality]).length;
+    var min=1;
+    var rndMsgNum = Math.floor(Math.random() * (max - min + 1)) + min;
+}
+    txtmsg = txtResponses[typeOfPersonality][("msg"+rndMsgNum)];
+    voicemsg = voiceResponses[typeOfPersonality][("msg"+rndMsgNum)];
+//Modify the payload and construct the final message JSON to send to the client as the response.
+var message = {
+    "type": "template",
+    "text": "Looking for mutually available times...",
+    "payload": {
+   	        
+    		"speech_hint": "Looking for mutually available times"
+    }
+};
+message.text=txtmsg;
+message.payload.speech_hint=voicemsg;
+if(isTimerTemplate){
+    message.payload.template_type = "start_timer";
+}
+//Check if quick replies have been defined above. If so, add those to the message payload.
+if(quickReplies.length > 0){
+    message.payload.template_type="quick_replies";
+    message.payload.quick_replies=[];
+    for (i = 0; i < quickReplies.length; i++) {
+    //if only text needs to diplayed
+    var quickReply = {
+        "content_type": "text",
+        "title": quickReplies[i],
+        "payload":quickReplies[i]
+    };
+    message.payload.quick_replies.push(quickReply);
+    }
+}
+//If SDK, send special JSON
+print(JSON.stringify(message));
+//If other channel, send plain text.
+//print(txtmsg);
